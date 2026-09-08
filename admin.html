@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Admin Dashboard</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="topbar">
+
+      <div>
+
+        <h1>Admin Dashboard</h1>
+
+        <p>
+          Subject ERP Database Overview
+        </p>
+
+      </div>
+
+      <a href="index.html">
+        Home
+      </a>
+
+    </header>
+
+
+    <main class="dashboard">
+
+
+      <section class="stats-grid">
+
+        <div class="stat-card">
+
+          <span>Teachers</span>
+
+          <strong id="teacherCount">
+            0
+          </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <span>Students</span>
+
+          <strong id="studentCount">
+            0
+          </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <span>Subjects</span>
+
+          <strong id="adminSubjectCount">
+            0
+          </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <span>Mappings</span>
+
+          <strong id="mappingCount">
+            0
+          </strong>
+
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <div class="section-title">
+
+          <h2>Teachers</h2>
+
+          <button
+            onclick="loadAdminData()"
+            class="secondary"
+          >
+            Refresh
+          </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Email</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="teacherTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <h2>Students</h2>
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Student ID</th>
+                <th>Branch</th>
+                <th>Semester</th>
+                <th>Division</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="studentTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <h2>Mappings</h2>
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Teacher ID</th>
+                <th>Subject ID</th>
+                <th>Branch</th>
+                <th>Semester</th>
+                <th>Division</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="mappingTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>

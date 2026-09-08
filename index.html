@@ -1,228 +1,875 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Teacher Dashboard</title>
-
-  <link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BEC Bagalkote · Subject Management</title>
+    <!-- ===== STYLE.CSS (extracted) ===== -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- ===== FONTS & ICONS ===== -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
-
 <body>
 
-  <div class="container">
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast"></div>
 
-    <header class="header">
+    <!-- ============================================================ -->
+    <!-- AUTH CONTAINER -->
+    <!-- ============================================================ -->
+    <div id="auth-container" class="auth-container">
+        <div class="auth-card">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="logo-icon">B</div>
+                <div>
+                    <div class="logo-text">BEC Bagalkote</div>
+                    <div class="logo-sub">Subject Management</div>
+                </div>
+            </div>
 
-      <div>
-        <h1>Teacher Dashboard</h1>
-        <p>Academic Subject Management</p>
-      </div>
+            <!-- Login -->
+            <div id="login-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input id="login-email" type="email" placeholder="you@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input id="login-password" type="password" placeholder="••••••••" />
+                </div>
+                <div class="forgot-password">
+                    <a onclick="openForgotPasswordModal()">Forgot Password?</a>
+                </div>
+                <button class="btn-primary btn-login" onclick="handleLogin()">Sign In</button>
+                <div class="auth-toggle">
+                    Don't have an account? <a onclick="showSignup()">Create one</a>
+                </div>
+            </div>
 
-    </header>
+            <!-- Signup -->
+            <div id="signup-form" class="hidden">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input id="signup-name" type="text" placeholder="Your full name" />
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input id="signup-email" type="email" placeholder="you@example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input id="signup-password" type="password" placeholder="••••••••" value="1234" />
+                    <span style="font-size:11px;color:#6B5A55;">Default: 1234</span>
+                </div>
+                <div class="form-group">
+                    <label>I am a...</label>
+                    <div class="role-selector">
+                        <button id="role-teacher" class="active" type="button" onclick="selectRole('teacher')">👨‍🏫 Teacher</button>
+                        <button id="role-student" type="button" onclick="selectRole('student')">🎓 Student</button>
+                    </div>
+                    <input type="hidden" id="signup-role" value="teacher" />
+                </div>
+                <div class="form-group">
+                    <label>Semester</label>
+                    <select id="signup-semester"></select>
+                </div>
+                <div class="form-group">
+                    <label>Division</label>
+                    <select id="signup-division"></select>
+                </div>
+                <div id="branch-group" class="form-group conditional-field open">
+                    <label>Branch Name</label>
+                    <select id="signup-branch"></select>
+                </div>
+                <button class="btn-success btn-login" onclick="handleSignup()">Create Account</button>
+                <div class="auth-toggle">
+                    Already have an account? <a onclick="showLogin()">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ============================================================ -->
+    <!-- FORGOT PASSWORD MODAL -->
+    <!-- ============================================================ -->
+    <div id="forgot-password-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="modal-content max-w-md">
+            <div class="modal-header flex items-center justify-between">
+                <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">🔐 Reset Password</h3>
+                <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeForgotPasswordModal()">
+                    <span class="material-symbols-outlined text-[22px]">close</span>
+                </button>
+            </div>
+            <form class="modal-body space-y-4" onsubmit="handleForgotPasswordSubmit(event)">
+                <p class="text-[13px] text-[#6B5A55]">Enter your email address. If an account exists, you will receive a password reset link.</p>
+                <div>
+                    <label class="form-label">Email Address</label>
+                    <input id="forgot-email" type="email" class="form-input" placeholder="you@example.com" required />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="closeForgotPasswordModal()">Cancel</button>
+                    <button type="submit" class="btn-secondary">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <main>
+    <!-- ============================================================ -->
+    <!-- RESET PASSWORD MODAL -->
+    <!-- ============================================================ -->
+    <div id="reset-password-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+        <div class="modal-content max-w-md">
+            <div class="modal-header flex items-center justify-between">
+                <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">🔑 Reset Password</h3>
+                <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeResetPasswordModal()">
+                    <span class="material-symbols-outlined text-[22px]">close</span>
+                </button>
+            </div>
+            <form class="modal-body space-y-4" onsubmit="handleResetPasswordSubmit(event)">
+                <p class="text-[13px] text-[#6B5A55]" id="reset-pw-target">Resetting password for: <strong id="reset-pw-user-email">—</strong></p>
+                <input type="hidden" id="reset-pw-email" />
+                <div class="reset-pw-field">
+                    <label>New Password</label>
+                    <input id="reset-pw-new" type="password" placeholder="Enter new password" required minlength="4" />
+                </div>
+                <div class="reset-pw-field">
+                    <label>Confirm Password</label>
+                    <input id="reset-pw-confirm" type="password" placeholder="Confirm new password" required minlength="4" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="closeResetPasswordModal()">Cancel</button>
+                    <button type="submit" class="btn-secondary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-      <!-- Dashboard Summary -->
+    <!-- ============================================================ -->
+    <!-- MAIN APP WRAPPER -->
+    <!-- ============================================================ -->
+    <div id="app-wrapper" class="app-wrapper">
 
-      <section class="stats">
+        <!-- SIDEBAR BACKDROP -->
+        <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
 
-        <div class="stat-card">
+        <!-- SIDEBAR -->
+        <aside class="sidebar-fixed fixed left-0 top-0 h-screen w-[260px] bg-white border-r border-[#E8DCD8] z-50 flex flex-col">
+            <div class="sidebar-brand p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7F1D1D] to-[#DC2626] flex items-center justify-center text-white font-bold text-[18px] flex-shrink-0">B</div>
+                <div>
+                    <div class="font-display font-bold text-[#F1F5F9] leading-tight text-[14px]">BEC Bagalkote</div>
+                    <div class="text-[11px] text-[#94A3B8]">Dept. of Mathematics</div>
+                </div>
+            </div>
 
-          <span>Total Subjects</span>
+            <div class="sidebar-user px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#DC2626] to-[#7F1D1D] text-white flex items-center justify-center font-bold text-[14px] uppercase" id="sidebar-avatar">MB</div>
+                        <div>
+                            <div class="user-name text-[13px] font-semibold" id="sidebar-name">Dr. Mahadev Biradar</div>
+                            <div class="user-role text-[11px]" id="sidebar-role">Faculty Guide</div>
+                            <div class="user-academic text-[10px]" id="sidebar-academic"></div>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="text-[#64748B] hover:text-red-400 transition" title="Logout">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                    </button>
+                </div>
+            </div>
 
-          <strong id="subjectCount">
-            0
-          </strong>
+            <nav class="flex-1 p-3 space-y-1 overflow-y-auto" id="sidebar-nav"></nav>
 
+            <div class="sidebar-footer p-3 text-center">
+                <div class="footer-text text-[10px]">Created by Dr. Mahadev Biradar</div>
+                <div class="footer-text text-[10px]">© 2026 BEC Bagalkote</div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content pl-[260px] min-h-screen">
+
+            <!-- HEADER -->
+            <header class="app-header bg-white border-b border-[#E8DCD8] h-16 flex items-center justify-between px-6 sticky top-0 z-40">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button class="hamburger-btn show-mobile" onclick="toggleSidebar()" aria-label="Toggle navigation">
+                        <span class="material-symbols-outlined text-[24px]">menu</span>
+                    </button>
+                    <span class="page-title-wrap text-[15px] font-semibold text-[#1A0E0C] truncate" id="page-title">Dashboard</span>
+                    <span class="bg-[#F1EDEB] text-[#6B5A55] text-[10px] font-semibold px-2.5 py-0.5 rounded-full hide-mobile uppercase tracking-wide">Semester System</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="header-user-wrap text-[13px] text-[#6B5A55] hidden sm:inline font-medium" id="header-user">Dr. Mahadev Biradar</span>
+                    <div class="header-avatar-wrap w-8 h-8 rounded-full bg-gradient-to-br from-[#DC2626] to-[#7F1D1D] text-white text-[12px] flex items-center justify-center font-bold uppercase" id="header-avatar">MB</div>
+                    <button onclick="openSelfResetPasswordModal()" class="text-[#64748B] hover:text-[#DC2626] transition text-[13px] hidden md:inline-flex items-center gap-1" title="Change Password">
+                        <span class="material-symbols-outlined text-[18px]">key</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- MAIN -->
+            <main class="app-main p-6">
+
+                <!-- ========================================================== -->
+                <!-- DASHBOARD -->
+                <!-- ========================================================== -->
+                <div id="view-dashboard" class="view-section hidden">
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold text-[#1A0E0C] font-display">Dashboard</h1>
+                            <p class="text-[14px] text-[#6B5A55]" id="dash-subtitle">Overview of your academic portfolio</p>
+                        </div>
+                        <button class="btn-primary" onclick="openAddSubjectModal()">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            Add Subject
+                        </button>
+                    </div>
+
+                    <div id="academic-info-bar" class="academic-info-bar mb-6">
+                        <div class="info-item">
+                            <span class="material-symbols-outlined text-[#D4A745] text-[20px]">calendar_month</span>
+                            <div>
+                                <div class="label">Academic Year</div>
+                                <div class="value" id="dash-academic-year">2025-26</div>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="info-item">
+                            <span class="material-symbols-outlined text-[#D4A745] text-[20px]">event_note</span>
+                            <div>
+                                <div class="label">Semester Type</div>
+                                <div class="value flex items-center gap-2">
+                                    <span id="dash-semester-type">ODD</span>
+                                    <span class="badge-semester" id="dash-semester-badge">ODD</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="info-item">
+                            <span class="material-symbols-outlined text-[#D4A745] text-[20px]">school</span>
+                            <div>
+                                <div class="label">Session</div>
+                                <div class="value text-[0.85rem] font-normal text-[#94A3B8]" id="dash-session-label">Even Semester</div>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="info-item ml-auto">
+                            <span class="badge-semester" id="dash-status-badge" style="background:rgba(212,167,69,0.15);color:#D4A745;border-color:rgba(212,167,69,0.15);">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="dash-stats"></div>
+                    <div class="card p-5 mb-6" id="announcements-section">
+                        <h3 class="font-display font-semibold text-[#1A0E0C] mb-3 flex items-center gap-2 text-[15px]">
+                            <span class="material-symbols-outlined text-[22px] text-[#D4A745]">campaign</span>
+                            Announcements
+                        </h3>
+                        <div id="announcements-list" class="space-y-2"></div>
+                        <div id="announcement-admin-actions" class="mt-3 hidden">
+                            <button class="btn-secondary text-[12px]" onclick="openAnnouncementModal()">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Post Announcement
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="card p-5">
+                            <h3 class="font-display font-semibold text-[#1A0E0C] mb-3 flex items-center gap-2 text-[15px]">
+                                <span class="material-symbols-outlined text-[22px] text-[#DC2626]">event_available</span>
+                                Today's Classes
+                            </h3>
+                            <div id="dash-today" class="space-y-2"></div>
+                        </div>
+                        <div class="card p-5">
+                            <h3 class="font-display font-semibold text-[#1A0E0C] mb-3 flex items-center gap-2 text-[15px]">
+                                <span class="material-symbols-outlined text-[22px] text-[#DC2626]">pending_actions</span>
+                                Recent Activity
+                            </h3>
+                            <div id="dash-activity" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================== -->
+                <!-- MY SUBJECTS -->
+                <!-- ========================================================== -->
+                <div id="view-my-subjects" class="view-section hidden">
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold text-[#1A0E0C] font-display">My Subjects</h1>
+                            <p class="text-[14px] text-[#6B5A55]">Manage all subjects in your department</p>
+                        </div>
+                        <button class="btn-primary" onclick="openAddSubjectModal()">
+                            <span class="material-symbols-outlined text-[18px]">add</span>
+                            Add Subject
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="subjects-grid"></div>
+                </div>
+
+                <!-- ========================================================== -->
+                <!-- SUBJECT DETAIL -->
+                <!-- ========================================================== -->
+                <div id="view-subject-detail" class="view-section hidden">
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <button class="btn-ghost" onclick="goBackToSubjects()">
+                            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                            Back to Subjects
+                        </button>
+                        <button class="btn-ghost" onclick="openEditSubjectModal()">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                            Edit Subject
+                        </button>
+                    </div>
+                    <div id="subject-detail-header"></div>
+                    <div class="card p-2 mb-4 flex items-center gap-1 overflow-x-auto" id="subject-tabs">
+                        <button class="tab-btn active" data-tab="overview" onclick="switchSubjectTab('overview')">
+                            <span class="material-symbols-outlined text-[16px]">info</span>Overview
+                        </button>
+                        <button class="tab-btn" data-tab="timetable" onclick="switchSubjectTab('timetable')">
+                            <span class="material-symbols-outlined text-[16px]">calendar_today</span>Timetable
+                        </button>
+                        <button class="tab-btn" data-tab="notes" onclick="switchSubjectTab('notes')">
+                            <span class="material-symbols-outlined text-[16px]">sticky_note_2</span>Notes
+                        </button>
+                        <button class="tab-btn" data-tab="syllabus" onclick="switchSubjectTab('syllabus')">
+                            <span class="material-symbols-outlined text-[16px]">menu_book</span>Syllabus
+                        </button>
+                        <button class="tab-btn" data-tab="resources" onclick="switchSubjectTab('resources')">
+                            <span class="material-symbols-outlined text-[16px]">folder_shared</span>Resources
+                        </button>
+                    </div>
+                    <div id="subject-tab-content"></div>
+                </div>
+
+                <!-- ========================================================== -->
+                <!-- ATTENDANCE -->
+                <!-- ========================================================== -->
+                <div id="view-attendance" class="view-section hidden">
+                    <div class="mb-6">
+                        <h1 class="text-2xl font-bold text-[#1A0E0C] font-display">Attendance</h1>
+                        <p class="text-[14px] text-[#6B5A55]">Mark student attendance date‑wise</p>
+                    </div>
+                    <div class="card p-5">
+                        <div class="flex flex-wrap items-end gap-4 mb-4">
+                            <div class="flex-1 min-w-[160px]">
+                                <label class="form-label">Select Subject</label>
+                                <select id="attendance-subject" class="form-select" style="min-width:auto;"></select>
+                            </div>
+                            <div class="flex-1 min-w-[150px]">
+                                <label class="form-label">Date</label>
+                                <input type="date" id="attendance-date" class="form-input">
+                            </div>
+                            <button class="btn-secondary flex-shrink-0" onclick="loadAttendance()">Load</button>
+                        </div>
+                        <h3 class="font-semibold text-[15px] mb-1">Click roll numbers of <span class="text-[#B91C1C]">ABSENT</span> students</h3>
+                        <p class="text-[12px] text-[#6B5A55] mb-3" id="attendance-strength-info">Strength: --</p>
+                        <div id="roll-grid" class="attendance-grid"></div>
+                        <div class="attendance-controls">
+                            <button class="btn-success" onclick="markAllPresent()">
+                                <span class="material-symbols-outlined text-[18px]">check_circle</span> All Present
+                            </button>
+                            <button class="btn-danger" onclick="markAllAbsent()">
+                                <span class="material-symbols-outlined text-[18px]">cancel</span> All Absent
+                            </button>
+                            <div class="selected-info" id="selected-info">
+                                <strong>Selected Absent:</strong> None / All Present
+                            </div>
+                            <button class="btn-secondary" onclick="submitAttendance()">
+                                <span class="material-symbols-outlined text-[18px]">save</span> Submit
+                            </button>
+                        </div>
+                        <div class="mt-4">
+                            <button class="btn-ghost text-[13px]" onclick="toggleHistory()">
+                                <span class="material-symbols-outlined text-[18px]">history</span> Show History
+                            </button>
+                            <div id="attendance-history" style="display: none; margin-top: 16px;">
+                                <h4 class="font-semibold text-[14px] mb-2">Attendance History</h4>
+                                <div id="history-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================== -->
+                <!-- USER MANAGEMENT -->
+                <!-- ========================================================== -->
+                <div id="view-admin-users" class="view-section hidden">
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold text-[#1A0E0C] font-display">User Management</h1>
+                            <p class="text-[14px] text-[#6B5A55]">Manage all registered users</p>
+                        </div>
+                        <span class="badge-role admin text-[11px]">Admin Only</span>
+                    </div>
+                    <div class="card p-0 overflow-hidden overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Semester</th>
+                                    <th>Division</th>
+                                    <th>Branch</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ========================================================== -->
+                <!-- SETTINGS -->
+                <!-- ========================================================== -->
+                <div id="view-admin-settings" class="view-section hidden">
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                        <div>
+                            <h1 class="text-2xl font-bold text-[#1A0E0C] font-display">Academic Settings</h1>
+                            <p class="text-[14px] text-[#6B5A55]">Manage academic year, semester type, branches, divisions, and semesters</p>
+                        </div>
+                        <span class="badge-role admin text-[11px]">Admin Only</span>
+                    </div>
+
+                    <div class="card p-5 mb-6">
+                        <h3 class="font-display font-semibold text-[#1A0E0C] mb-4 text-[15px]">Current Academic Settings</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="form-label">Academic Year</label>
+                                <input id="academic-year" type="text" class="form-input" placeholder="e.g. 2025-26" />
+                            </div>
+                            <div>
+                                <label class="form-label">Semester Type</label>
+                                <select id="semester-type" class="form-select">
+                                    <option value="ODD">ODD</option>
+                                    <option value="EVEN">EVEN</option>
+                                    <option value="SUMMER">SUMMER</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button class="btn-secondary w-full" onclick="saveAcademicSettings()">Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-5 mb-6">
+                        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                            <h3 class="font-display font-semibold text-[#1A0E0C] text-[15px]">Branches</h3>
+                            <button class="btn-secondary text-[12px]" onclick="openAddBranchModal()">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Add Branch
+                            </button>
+                        </div>
+                        <div id="branches-list" class="space-y-1"></div>
+                    </div>
+
+                    <div class="card p-5 mb-6">
+                        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                            <h3 class="font-display font-semibold text-[#1A0E0C] text-[15px]">Divisions</h3>
+                            <button class="btn-secondary text-[12px]" onclick="openAddDivisionModal()">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Add Division
+                            </button>
+                        </div>
+                        <div id="divisions-list" class="space-y-1"></div>
+                    </div>
+
+                    <div class="card p-5">
+                        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                            <h3 class="font-display font-semibold text-[#1A0E0C] text-[15px]">Semesters</h3>
+                            <button class="btn-secondary text-[12px]" onclick="openAddSemesterModal()">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Add Semester
+                            </button>
+                        </div>
+                        <div id="semesters-list" class="space-y-1"></div>
+                    </div>
+                </div>
+
+                <!-- ========================================================== -->
+                <!-- TEACHER WEBSITE VIEW -->
+                <!-- ========================================================== -->
+                <div id="view-teacher" class="view-section hidden">
+                    <div class="hero-teacher mb-6">
+                        <div class="hero-title" id="teacher-hero-title">👨‍🏫 Faculty Portal</div>
+                        <div class="hero-sub" id="teacher-hero-sub">Manage your subjects, attendance & timetable</div>
+                        <div class="hero-meta" id="teacher-hero-meta">
+                            <span>📚 <span id="teacher-hero-subject-count">0</span> Subjects</span>
+                            <span>🧑‍🎓 <span id="teacher-hero-student-count">0</span> Students</span>
+                            <span>📅 <span id="teacher-hero-year">2025-26</span></span>
+                        </div>
+                    </div>
+
+                    <div class="role-tab-bar mb-6" id="teacher-tab-bar">
+                        <button class="tab-btn active" data-teacher-tab="home" onclick="switchTeacherTab('home')">
+                            <span class="material-symbols-outlined text-[16px]">home</span> Home
+                        </button>
+                        <button class="tab-btn" data-teacher-tab="subjects" onclick="switchTeacherTab('subjects')">
+                            <span class="material-symbols-outlined text-[16px]">auto_stories</span> My Subjects
+                        </button>
+                        <button class="tab-btn" data-teacher-tab="attendance" onclick="switchTeacherTab('attendance')">
+                            <span class="material-symbols-outlined text-[16px]">fact_check</span> Attendance
+                        </button>
+                        <button class="tab-btn" data-teacher-tab="timetable" onclick="switchTeacherTab('timetable')">
+                            <span class="material-symbols-outlined text-[16px]">calendar_today</span> Timetable
+                        </button>
+                        <button class="tab-btn" data-teacher-tab="resources" onclick="switchTeacherTab('resources')">
+                            <span class="material-symbols-outlined text-[16px]">folder_shared</span> Resources
+                        </button>
+                    </div>
+
+                    <div id="teacher-tab-content" class="website-tab-content"></div>
+                </div>
+
+                <!-- ========================================================== -->
+                <!-- STUDENT WEBSITE VIEW -->
+                <!-- ========================================================== -->
+                <div id="view-student" class="view-section hidden">
+                    <div class="hero-teacher mb-6" style="background:linear-gradient(135deg,#0A1628 0%,#1a3a5c 100%);">
+                        <div class="hero-title" id="student-hero-title">🎓 Student Portal</div>
+                        <div class="hero-sub" id="student-hero-sub">Welcome to your academic dashboard</div>
+                        <div class="hero-meta" id="student-hero-meta">
+                            <span>📚 <span id="student-hero-semester">I Semester</span></span>
+                            <span>📋 Div <span id="student-hero-division">A</span></span>
+                            <span>🏛️ <span id="student-hero-branch">CSE</span></span>
+                            <span>📅 <span id="student-hero-year">2025-26</span></span>
+                        </div>
+                    </div>
+
+                    <div class="role-tab-bar mb-6" id="student-tab-bar">
+                        <button class="tab-btn active" data-student-tab="home" onclick="switchStudentTab('home')">
+                            <span class="material-symbols-outlined text-[16px]">home</span> Home
+                        </button>
+                        <button class="tab-btn" data-student-tab="subjects" onclick="switchStudentTab('subjects')">
+                            <span class="material-symbols-outlined text-[16px]">auto_stories</span> My Subjects
+                        </button>
+                        <button class="tab-btn" data-student-tab="attendance" onclick="switchStudentTab('attendance')">
+                            <span class="material-symbols-outlined text-[16px]">fact_check</span> Attendance
+                        </button>
+                        <button class="tab-btn" data-student-tab="resources" onclick="switchStudentTab('resources')">
+                            <span class="material-symbols-outlined text-[16px]">folder_shared</span> Resources
+                        </button>
+                    </div>
+
+                    <div id="student-tab-content" class="website-tab-content"></div>
+                </div>
+
+            </main>
         </div>
 
-      </section>
+        <!-- ============================================================ -->
+        <!-- MODALS -->
+        <!-- ============================================================ -->
 
-
-      <!-- Add Subject -->
-
-      <section class="card">
-
-        <h2>Add Subject</h2>
-
-        <form id="subjectForm">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-
-              <label>
-                Subject Code
-              </label>
-
-              <input
-                type="text"
-                id="subjectCode"
-                placeholder="Example: 22UMA201C"
-                required
-              >
-
+        <!-- Subject Modal -->
+        <div id="subject-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 id="subject-modal-title" class="font-display font-bold text-[#1A0E0C] text-[18px]">Add Subject</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeSubjectModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form id="subject-form" class="modal-body space-y-4" onsubmit="handleSubjectSubmit(event)">
+                    <input type="hidden" id="subject-form-id" />
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="form-label">Subject Name *</label>
+                            <input id="subject-name" required type="text" class="form-input" placeholder="e.g. Engineering Mathematics" />
+                        </div>
+                        <div>
+                            <label class="form-label">Subject Code *</label>
+                            <input id="subject-code" required type="text" class="form-input" placeholder="e.g. MA-101" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="form-label">Semester</label>
+                            <select id="subject-semester" class="form-select"></select>
+                        </div>
+                        <div>
+                            <label class="form-label">Division</label>
+                            <select id="subject-division" class="form-select"></select>
+                        </div>
+                        <div>
+                            <label class="form-label">Branch</label>
+                            <select id="subject-branch" class="form-select"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Student Strength</label>
+                        <input id="subject-strength" type="number" min="1" max="200" class="form-input" placeholder="e.g. 58" value="58" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeSubjectModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Save Subject</button>
+                    </div>
+                </form>
             </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Subject Name
-              </label>
-
-              <input
-                type="text"
-                id="subjectName"
-                placeholder="Example: Mathematics"
-                required
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Semester
-              </label>
-
-              <select id="semester" required>
-
-                <option value="">
-                  Select Semester
-                </option>
-
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-
-              </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Division
-              </label>
-
-              <select id="division" required>
-
-                <option value="">
-                  Select Division
-                </option>
-
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-
-              </select>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="submit"
-            id="saveButton"
-          >
-            Save Subject
-          </button>
-
-        </form>
-
-
-        <div id="message"></div>
-
-      </section>
-
-
-      <!-- Subject List -->
-
-      <section class="card">
-
-        <div class="section-header">
-
-          <h2>My Subjects</h2>
-
-          <button
-            type="button"
-            id="refreshButton"
-            class="secondary-button"
-          >
-            Refresh
-          </button>
-
         </div>
 
-
-        <div class="table-wrapper">
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th>Subject Code</th>
-                <th>Subject Name</th>
-                <th>Semester</th>
-                <th>Division</th>
-                <th>Action</th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody id="subjectTableBody">
-
-              <tr>
-
-                <td
-                  colspan="5"
-                  class="empty"
-                >
-                  Loading...
-                </td>
-
-              </tr>
-
-            </tbody>
-
-          </table>
-
+        <!-- Branch Modal -->
+        <div id="branch-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Add Branch</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeBranchModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleAddBranch(event)">
+                    <div>
+                        <label class="form-label">Branch Name *</label>
+                        <input id="new-branch" type="text" required class="form-input" placeholder="e.g. Artificial Intelligence" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeBranchModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Add</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-      </section>
+        <!-- Division Modal -->
+        <div id="division-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Add Division</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeDivisionModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleAddDivision(event)">
+                    <div>
+                        <label class="form-label">Division Name *</label>
+                        <input id="new-division" type="text" required class="form-input" placeholder="e.g. E" maxlength="2" style="text-transform:uppercase;" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeDivisionModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-    </main>
+        <!-- Semester Modal -->
+        <div id="semester-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Add Semester</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeSemesterModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleAddSemester(event)">
+                    <div>
+                        <label class="form-label">Semester Label *</label>
+                        <input id="new-semester" type="text" required class="form-input" placeholder="e.g. IX Semester" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeSemesterModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-  </div>
+        <!-- Timetable Modal -->
+        <div id="timetable-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Add Timetable Slot</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeTimetableModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleTimetableSubmit(event)">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="form-label">Day</label>
+                            <select id="tt-day" class="form-select">
+                                <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+                                <option>Thursday</option><option>Friday</option><option>Saturday</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Room</label>
+                            <input id="tt-room" type="text" class="form-input" placeholder="E-204" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="form-label">Start Time</label>
+                            <input id="tt-start" type="text" class="form-input" placeholder="09:00 AM" />
+                        </div>
+                        <div>
+                            <label class="form-label">End Time</label>
+                            <input id="tt-end" type="text" class="form-input" placeholder="10:00 AM" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Topic / Remarks</label>
+                        <input id="tt-topic" type="text" class="form-input" placeholder="Lecture on ..." />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeTimetableModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Add Slot</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
+        <!-- Resource Modal -->
+        <div id="resource-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Add Resource</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeResourceModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleResourceSubmit(event)">
+                    <div>
+                        <label class="form-label">Resource Title *</label>
+                        <input id="res-title" required type="text" class="form-input" placeholder="e.g. Calculus Notes" />
+                    </div>
+                    <div>
+                        <label class="form-label">Resource Type</label>
+                        <select id="res-type" class="form-select">
+                            <option value="notes">Notes</option><option value="assignment">Assignment</option>
+                            <option value="question-paper">Question Paper</option><option value="video">Video</option>
+                            <option value="presentation">Presentation</option><option value="reference">Reference</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Description</label>
+                        <textarea id="res-desc" rows="2" class="form-textarea" placeholder="Brief description..."></textarea>
+                    </div>
+                    <div>
+                        <label class="form-label">Link Type</label>
+                        <select id="res-link-type" class="form-select">
+                            <option value="google-drive">Google Drive</option><option value="google-sheet">Google Sheet</option>
+                            <option value="web-url">Web URL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Link URL *</label>
+                        <input id="res-link" required type="url" class="form-input" placeholder="https://..." />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeResourceModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-  <script src="script.js"></script>
+        <!-- Note Modal -->
+        <div id="note-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Add Note</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeNoteModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleNoteSubmit(event)">
+                    <div>
+                        <label class="form-label">Note Title *</label>
+                        <input id="note-title" required type="text" class="form-input" placeholder="e.g. Lecture 1 Summary" />
+                    </div>
+                    <div>
+                        <label class="form-label">Content</label>
+                        <textarea id="note-content" rows="3" class="form-textarea" placeholder="Write your note..."></textarea>
+                    </div>
+                    <div>
+                        <label class="form-label">Link Type</label>
+                        <select id="note-link-type" class="form-select">
+                            <option value="google-drive">Google Drive</option><option value="google-sheet">Google Sheet</option>
+                            <option value="web-url">Web URL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Link URL</label>
+                        <input id="note-link" type="url" class="form-input" placeholder="https://..." />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeNoteModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
+        <!-- Syllabus Modal -->
+        <div id="syllabus-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Edit Syllabus</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeSyllabusModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleSyllabusSubmit(event)">
+                    <div>
+                        <label class="form-label">Syllabus Content</label>
+                        <textarea id="syl-content" rows="4" class="form-textarea" placeholder="Enter syllabus details..."></textarea>
+                    </div>
+                    <div>
+                        <label class="form-label">Link Type</label>
+                        <select id="syl-link-type" class="form-select">
+                            <option value="google-drive">Google Drive</option><option value="google-sheet">Google Sheet</option>
+                            <option value="web-url">Web URL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Link URL</label>
+                        <input id="syl-link" type="url" class="form-input" placeholder="https://..." />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeSyllabusModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Announcement Modal -->
+        <div id="announcement-modal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+            <div class="modal-content max-w-md">
+                <div class="modal-header flex items-center justify-between">
+                    <h3 class="font-display font-bold text-[#1A0E0C] text-[18px]">Post Announcement</h3>
+                    <button class="p-1 rounded hover:bg-[#F1EDEB] transition" onclick="closeAnnouncementModal()">
+                        <span class="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                </div>
+                <form class="modal-body space-y-4" onsubmit="handleAnnouncementSubmit(event)">
+                    <div>
+                        <label class="form-label">Title *</label>
+                        <input id="ann-title" required type="text" class="form-input" placeholder="e.g. Exam Schedule Update" />
+                    </div>
+                    <div>
+                        <label class="form-label">Content *</label>
+                        <textarea id="ann-content" required rows="3" class="form-textarea" placeholder="Write announcement..."></textarea>
+                    </div>
+                    <div>
+                        <label class="form-label">Target Audience</label>
+                        <select id="ann-target" class="form-select">
+                            <option value="all">All (Teachers & Students)</option>
+                            <option value="teachers">Teachers Only</option>
+                            <option value="students">Students Only</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ghost" onclick="closeAnnouncementModal()">Cancel</button>
+                        <button type="submit" class="btn-secondary">Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== SCRIPT.JS ===== -->
+    <script src="script.js"></script>
 </body>
-
 </html>

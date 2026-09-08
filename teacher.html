@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Teacher Dashboard</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="topbar">
+
+      <div>
+
+        <h1>Teacher Dashboard</h1>
+
+        <p>
+          Subject and class management
+        </p>
+
+      </div>
+
+      <a href="index.html">
+        Home
+      </a>
+
+    </header>
+
+
+    <main class="dashboard">
+
+      <!-- Teacher Registration -->
+
+      <section class="card">
+
+        <h2>Teacher Registration</h2>
+
+        <form id="teacherForm">
+
+          <div class="form-grid">
+
+            <div>
+
+              <label>
+                Teacher Name
+              </label>
+
+              <input
+                id="teacherName"
+                required
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Department
+              </label>
+
+              <input
+                id="department"
+                placeholder="Mathematics"
+                required
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Email
+              </label>
+
+              <input
+                type="email"
+                id="teacherEmail"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+          <button type="submit">
+            Register Teacher
+          </button>
+
+        </form>
+
+        <div id="teacherMessage"></div>
+
+      </section>
+
+
+      <!-- Add Subject -->
+
+      <section class="card">
+
+        <h2>Add Subject</h2>
+
+        <form id="subjectForm">
+
+          <div class="form-grid">
+
+            <div>
+
+              <label>
+                Subject Code
+              </label>
+
+              <input
+                id="subjectCode"
+                placeholder="22UMA201C"
+                required
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Subject Name
+              </label>
+
+              <input
+                id="subjectName"
+                placeholder="Engineering Mathematics"
+                required
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Branch
+              </label>
+
+              <select id="subjectBranch" required>
+
+                <option value="">
+                  Select Branch
+                </option>
+
+                <option>CSE</option>
+                <option>ISE</option>
+                <option>ECE</option>
+                <option>EEE</option>
+                <option>ME</option>
+                <option>CE</option>
+                <option>AI&ML</option>
+                <option>DS</option>
+                <option>IT</option>
+                <option>ECM</option>
+
+              </select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Semester
+              </label>
+
+              <select id="subjectSemester" required>
+
+                <option value="">
+                  Select Semester
+                </option>
+
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <button type="submit">
+            Save Subject
+          </button>
+
+        </form>
+
+        <div id="subjectMessage"></div>
+
+      </section>
+
+
+      <!-- Teacher Subject Mapping -->
+
+      <section class="card">
+
+        <h2>Assign Subject to Teacher</h2>
+
+        <form id="mappingForm">
+
+          <div class="form-grid">
+
+            <div>
+
+              <label>
+                Teacher
+              </label>
+
+              <select
+                id="mappingTeacher"
+                required
+              ></select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Subject
+              </label>
+
+              <select
+                id="mappingSubject"
+                required
+              ></select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Branch
+              </label>
+
+              <select
+                id="mappingBranch"
+                required
+              >
+
+                <option value="">
+                  Select Branch
+                </option>
+
+                <option>CSE</option>
+                <option>ISE</option>
+                <option>ECE</option>
+                <option>EEE</option>
+                <option>ME</option>
+                <option>CE</option>
+                <option>AI&ML</option>
+                <option>DS</option>
+                <option>IT</option>
+                <option>ECM</option>
+
+              </select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Semester
+              </label>
+
+              <select
+                id="mappingSemester"
+                required
+              >
+
+                <option value="">
+                  Select Semester
+                </option>
+
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+
+              </select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Division
+              </label>
+
+              <select
+                id="mappingDivision"
+                required
+              >
+
+                <option value="">
+                  Select Division
+                </option>
+
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+                <option>D</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <button type="submit">
+            Create Mapping
+          </button>
+
+        </form>
+
+        <div id="mappingMessage"></div>
+
+      </section>
+
+
+      <!-- Resources -->
+
+      <section class="card">
+
+        <h2>Add Resource</h2>
+
+        <form id="resourceForm">
+
+          <div class="form-grid">
+
+            <div>
+
+              <label>
+                Teacher
+              </label>
+
+              <select
+                id="resourceTeacher"
+                required
+              ></select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Subject
+              </label>
+
+              <select
+                id="resourceSubject"
+                required
+              ></select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Title
+              </label>
+
+              <input
+                id="resourceTitle"
+                placeholder="Unit 1 Notes"
+                required
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Resource Type
+              </label>
+
+              <select
+                id="resourceType"
+                required
+              >
+
+                <option value="">
+                  Select Type
+                </option>
+
+                <option>PDF</option>
+                <option>Notes</option>
+                <option>Video</option>
+                <option>Link</option>
+                <option>Assignment</option>
+
+              </select>
+
+            </div>
+
+
+            <div class="full">
+
+              <label>
+                Resource URL
+              </label>
+
+              <input
+                id="resourceUrl"
+                type="url"
+                placeholder="https://drive.google.com/..."
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+          <button type="submit">
+            Save Resource
+          </button>
+
+        </form>
+
+        <div id="resourceMessage"></div>
+
+      </section>
+
+
+      <!-- Subjects -->
+
+      <section class="card">
+
+        <div class="section-title">
+
+          <h2>Subjects</h2>
+
+          <button
+            onclick="loadTeacherData()"
+            class="secondary"
+          >
+            Refresh
+          </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Branch</th>
+                <th>Semester</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="subjectTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>

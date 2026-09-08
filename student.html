@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Student Dashboard</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="topbar">
+
+      <div>
+
+        <h1>Student Dashboard</h1>
+
+        <p>
+          Subject Registration and Resources
+        </p>
+
+      </div>
+
+      <a href="index.html">
+        Home
+      </a>
+
+    </header>
+
+
+    <main class="dashboard">
+
+
+      <!-- Student Registration -->
+
+      <section class="card">
+
+        <h2>Student Registration</h2>
+
+        <form id="studentForm">
+
+          <div class="form-grid">
+
+            <div>
+
+              <label>
+                Student ID
+              </label>
+
+              <input
+                id="studentId"
+                placeholder="2BA26CS001"
+                required
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Branch
+              </label>
+
+              <select id="studentBranch" required>
+
+                <option value="">
+                  Select Branch
+                </option>
+
+                <option>CSE</option>
+                <option>ISE</option>
+                <option>ECE</option>
+                <option>EEE</option>
+                <option>ME</option>
+                <option>CE</option>
+                <option>AI&ML</option>
+                <option>DS</option>
+                <option>IT</option>
+                <option>ECM</option>
+
+              </select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Semester
+              </label>
+
+              <select id="studentSemester" required>
+
+                <option value="">
+                  Select Semester
+                </option>
+
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+
+              </select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Division
+              </label>
+
+              <select id="studentDivision" required>
+
+                <option value="">
+                  Select Division
+                </option>
+
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+                <option>D</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <button type="submit">
+            Register Student
+          </button>
+
+        </form>
+
+        <div id="studentMessage"></div>
+
+      </section>
+
+
+      <!-- Subject Registration -->
+
+      <section class="card">
+
+        <h2>Register Subject</h2>
+
+        <form id="studentSubjectForm">
+
+          <div class="form-grid">
+
+            <div>
+
+              <label>
+                Student ID
+              </label>
+
+              <input
+                id="registrationStudentId"
+                required
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Branch
+              </label>
+
+              <select
+                id="registrationBranch"
+                required
+              >
+
+                <option value="">
+                  Select Branch
+                </option>
+
+                <option>CSE</option>
+                <option>ISE</option>
+                <option>ECE</option>
+                <option>EEE</option>
+                <option>ME</option>
+                <option>CE</option>
+                <option>AI&ML</option>
+                <option>DS</option>
+                <option>IT</option>
+                <option>ECM</option>
+
+              </select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Semester
+              </label>
+
+              <select
+                id="registrationSemester"
+                required
+              >
+
+                <option value="">
+                  Select Semester
+                </option>
+
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+
+              </select>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Division
+              </label>
+
+              <select
+                id="registrationDivision"
+                required
+              >
+
+                <option value="">
+                  Select Division
+                </option>
+
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+                <option>D</option>
+
+              </select>
+
+            </div>
+
+
+            <div class="full">
+
+              <label>
+                Subject
+              </label>
+
+              <select
+                id="registrationSubject"
+                required
+              ></select>
+
+            </div>
+
+          </div>
+
+
+          <button type="submit">
+            Register Subject
+          </button>
+
+        </form>
+
+        <div id="studentSubjectMessage"></div>
+
+      </section>
+
+
+      <!-- Resources -->
+
+      <section class="card">
+
+        <h2>Available Resources</h2>
+
+        <button
+          onclick="loadStudentResources()"
+          class="secondary"
+        >
+          Refresh Resources
+        </button>
+
+        <div
+          id="resourceList"
+          class="resource-list"
+        ></div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>

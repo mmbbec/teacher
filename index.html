@@ -1,150 +1,897 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Academic Management System — Phase 1: Core Mapping</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AMS — BEC Subject Management (Professional)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* ===== Enhanced BEC Subject Styles ===== */
+        .bec-badge {
+            display: inline-block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .bec-badge.bs {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .bec-badge.es {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .bec-badge.hs {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .bec-badge.pc {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        .bec-badge.pe {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+        .bec-badge.oe {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .subject-category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .subject-category-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        .hours-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .hours-group .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .hours-group .form-group input {
+            text-align: center;
+        }
+
+        .prereq-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #f1f5f9;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin: 0.15rem 0.25rem 0.15rem 0;
+        }
+        .prereq-tag .remove-prereq {
+            cursor: pointer;
+            color: #ef4444;
+            font-weight: 700;
+            font-size: 0.8rem;
+            line-height: 1;
+        }
+
+        .outcome-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            background: #f8fafc;
+            border-radius: 4px;
+            margin-bottom: 0.3rem;
+            font-size: 0.8rem;
+        }
+        .outcome-item .remove-outcome {
+            cursor: pointer;
+            color: #ef4444;
+            font-weight: 700;
+            margin-left: auto;
+        }
+
+        .form-section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin: 1rem 0 0.5rem 0;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .subject-detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        /* Subject card in table */
+        .subject-row-expanded {
+            background: #f8fafc;
+        }
+        .subject-row-expanded td {
+            padding: 0.75rem 0.6rem;
+        }
+        .subject-meta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        .subject-meta-tags .tag {
+            font-size: 0.6rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-outline-sm {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .btn-outline-sm:hover {
+            background: var(--bg-color);
+        }
+
+        .co-list {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 200px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 600px) {
+            .subject-category-grid {
+                grid-template-columns: 1fr;
+            }
+            .subject-detail-row {
+                grid-template-columns: 1fr;
+            }
+            .hours-group {
+                flex-wrap: wrap;
+            }
+            .hours-group .form-group {
+                flex: 1 1 30%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="header-container">
-      <h2>Academic Management System (AMS)</h2>
-      <span class="badge">Phase 1 — Step 1: Core Mapping</span>
-    </div>
-  </header>
-
-  <main class="container">
-    <!-- Controls & Alerts -->
-    <div id="statusBanner" class="banner hidden"></div>
-
-    <div class="grid-layout">
-      <!-- Left Column: Class & Subject Forms -->
-      <section class="forms-column">
-        <!-- Class Finding / Creation Card -->
-        <div class="card">
-          <div class="card-header">
-            <h3>1. Academic Class Setup</h3>
-          </div>
-          <form id="classForm" class="card-body">
-            <div class="form-group">
-              <label for="academicYear">Academic Year</label>
-              <select id="academicYear" required></select>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group half">
-                <label for="semesterType">Semester Type</label>
-                <select id="semesterType" required></select>
-              </div>
-              <div class="form-group half">
-                <label for="semester">Semester</label>
-                <select id="semester" required></select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group half">
-                <label for="branch">Branch</label>
-                <select id="branch" required></select>
-              </div>
-              <div class="form-group half">
-                <label for="division">Division</label>
-                <select id="division" required></select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="studentStrength">Student Strength (Class Level)</label>
-              <input type="number" id="studentStrength" min="1" max="500" value="60" required />
-              <small class="hint">Strength belongs to the division/class, not individual subjects.</small>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Find / Create Class</button>
-          </form>
+    <header class="app-header">
+        <div class="header-container">
+            <h2>Academic Management System (AMS)</h2>
+            <span class="badge">BEC Subject Management — Professional</span>
         </div>
+    </header>
 
-        <!-- Subject Setup Card (Conditional on Active Class) -->
-        <div class="card" id="subjectCard">
-          <div class="card-header">
-            <h3>2. Add Subject to Active Class</h3>
-          </div>
-          <div class="card-body">
-            <div id="activeClassDetails" class="active-class-box muted">
-              <em>No class selected. Find or create a class above.</em>
-            </div>
+    <main class="container">
+        <!-- Status Banner -->
+        <div id="statusBanner" class="banner hidden"></div>
 
-            <form id="subjectForm" class="hidden">
-              <div class="form-group">
-                <label for="subjectCode">Subject Code</label>
-                <input type="text" id="subjectCode" placeholder="e.g., 21MAT301" required />
-              </div>
-              <div class="form-group">
-                <label for="subjectName">Subject Name</label>
-                <input type="text" id="subjectName" placeholder="e.g., Mathematics" required />
-              </div>
-              <button type="submit" class="btn btn-secondary">Add Subject</button>
-            </form>
-          </div>
+        <div class="grid-layout">
+            <!-- LEFT COLUMN: Forms -->
+            <section class="forms-column">
+                <!-- Class Setup Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>1. Academic Class Setup</h3>
+                    </div>
+                    <form id="classForm" class="card-body">
+                        <div class="form-group">
+                            <label for="academicYear">Academic Year</label>
+                            <select id="academicYear" required></select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="semesterType">Semester Type</label>
+                                <select id="semesterType" required></select>
+                            </div>
+                            <div class="form-group half">
+                                <label for="semester">Semester</label>
+                                <select id="semester" required></select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="branch">Branch</label>
+                                <select id="branch" required></select>
+                            </div>
+                            <div class="form-group half">
+                                <label for="division">Division</label>
+                                <select id="division" required></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentStrength">Student Strength (Class Level)</label>
+                            <input type="number" id="studentStrength" min="1" max="500" value="60" required />
+                            <small class="hint">Strength belongs to the division/class, not individual subjects.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Find / Create Class</button>
+                    </form>
+                </div>
+
+                <!-- Subject Setup Card (Professional BEC) -->
+                <div class="card" id="subjectCard">
+                    <div class="card-header">
+                        <h3>2. Add BEC Subject to Active Class</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="activeClassDetails" class="active-class-box muted">
+                            <em>No class selected. Find or create a class above.</em>
+                        </div>
+
+                        <form id="subjectForm" class="hidden">
+                            <!-- Basic Info -->
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="subjectCode">Subject Code *</label>
+                                    <input type="text" id="subjectCode" placeholder="e.g., 21MAT301" required />
+                                </div>
+                                <div class="form-group half">
+                                    <label for="subjectName">Subject Name *</label>
+                                    <input type="text" id="subjectName" placeholder="e.g., Engineering Mathematics" required />
+                                </div>
+                            </div>
+
+                            <!-- Category & Type -->
+                            <div class="subject-category-grid">
+                                <div class="form-group">
+                                    <label for="subjectCategory">Category</label>
+                                    <select id="subjectCategory">
+                                        <option value="BS">Basic Science (BS)</option>
+                                        <option value="ES" selected>Engineering Science (ES)</option>
+                                        <option value="HS">Humanities (HS)</option>
+                                        <option value="PC">Professional Core (PC)</option>
+                                        <option value="PE">Professional Elective (PE)</option>
+                                        <option value="OE">Open Elective (OE)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="subjectType">Subject Type</label>
+                                    <select id="subjectType">
+                                        <option value="Theory">Theory</option>
+                                        <option value="Practical">Practical</option>
+                                        <option value="Theory+Practical">Theory + Practical</option>
+                                        <option value="Tutorial">Tutorial</option>
+                                        <option value="Project">Project</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Credits & Hours -->
+                            <div class="form-section-title">Credits &amp; Contact Hours</div>
+                            <div class="subject-detail-row">
+                                <div class="form-group">
+                                    <label for="credits">Credits</label>
+                                    <input type="number" id="credits" min="0" max="12" value="3" />
+                                </div>
+                                <div class="hours-group">
+                                    <div class="form-group">
+                                        <label>L</label>
+                                        <input type="number" id="lectureHours" min="0" max="8" value="3" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>T</label>
+                                        <input type="number" id="tutorialHours" min="0" max="8" value="0" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>P</label>
+                                        <input type="number" id="practicalHours" min="0" max="8" value="0" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Prerequisites -->
+                            <div class="form-section-title">Prerequisites</div>
+                            <div class="form-group">
+                                <div style="display:flex;gap:0.5rem;">
+                                    <input type="text" id="prereqInput" placeholder="Enter subject code, e.g., 21MAT201" style="flex:1;" />
+                                    <button type="button" id="addPrereqBtn" class="btn btn-secondary" style="width:auto;padding:0.4rem 0.8rem;font-size:0.8rem;">Add</button>
+                                </div>
+                                <div id="prereqTags" class="prereq-tags" style="margin-top:0.4rem;"></div>
+                                <small class="hint">List prerequisite subject codes.</small>
+                            </div>
+
+                            <!-- Course Outcomes -->
+                            <div class="form-section-title">Course Outcomes (COs)</div>
+                            <div class="form-group">
+                                <div style="display:flex;gap:0.5rem;">
+                                    <input type="text" id="outcomeInput" placeholder="e.g., Apply Laplace transforms" style="flex:1;" />
+                                    <button type="button" id="addOutcomeBtn" class="btn btn-secondary" style="width:auto;padding:0.4rem 0.8rem;font-size:0.8rem;">Add</button>
+                                </div>
+                                <div id="outcomeList" class="outcome-list" style="margin-top:0.4rem;"></div>
+                                <small class="hint">Define measurable learning outcomes.</small>
+                            </div>
+
+                            <!-- Syllabus (brief) -->
+                            <div class="form-group">
+                                <label for="syllabusBrief">Syllabus Brief</label>
+                                <textarea id="syllabusBrief" rows="2" placeholder="Key topics covered..." style="width:100%;padding:0.55rem;border:1px solid var(--border-color);border-radius:6px;font-size:0.9rem;resize:vertical;"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-secondary">Add BEC Subject</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: Data Registry -->
+            <section class="data-column">
+                <div class="card">
+                    <div class="card-header flex-between">
+                        <h3>System Verification &amp; Data Registry</h3>
+                        <button id="clearDataBtn" class="btn btn-danger-sm">Clear Test Data</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-bar">
+                            <div class="stat-item">
+                                <span class="stat-value" id="totalClassesCount">0</span>
+                                <span class="stat-label">Total Classes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="totalSubjectsCount">0</span>
+                                <span class="stat-label">Total Subjects</span>
+                            </div>
+                        </div>
+
+                        <h4>Classes Table</h4>
+                        <div class="table-wrapper">
+                            <table id="classesTable">
+                                <thead>
+                                    <tr><th>Class Code</th><th>AY</th><th>Sem</th><th>Branch</th><th>Div</th><th>Strength</th></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <h4 class="mt-2">Subjects Table (BEC Enhanced)</h4>
+                        <div class="table-wrapper">
+                            <table id="subjectsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Subject ID</th>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Cat</th>
+                                        <th>Type</th>
+                                        <th>Credits</th>
+                                        <th>L/T/P</th>
+                                        <th>Class Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
-      </section>
+    </main>
 
-      <!-- Right Column: Verification & Data Registry -->
-      <section class="data-column">
-        <div class="card">
-          <div class="card-header flex-between">
-            <h3>System Verification & Data Registry</h3>
-            <button id="clearDataBtn" class="btn btn-danger-sm">Clear Test Data</button>
-          </div>
-          <div class="card-body">
-            <div class="stats-bar">
-              <div class="stat-item">
-                <span class="stat-value" id="totalClassesCount">0</span>
-                <span class="stat-label">Total Classes</span>
+    <script>
+        // ============================================================
+        //  ACADEMIC MANAGEMENT SYSTEM — PHASE 1: BEC PROFESSIONAL
+        //  Enhanced Subject Management with Credits, Categories, COs, etc.
+        // ============================================================
+
+        // ============================================================
+        // 1. STORAGE ABSTRACTION LAYER (unchanged)
+        // ============================================================
+        const Storage = {
+            KEYS: {
+                ACADEMIC_YEARS: 'AMS_ACADEMIC_YEARS',
+                SEMESTER_TYPES: 'AMS_SEMESTER_TYPES',
+                SEMESTERS: 'AMS_SEMESTERS',
+                BRANCHES: 'AMS_BRANCHES',
+                DIVISIONS: 'AMS_DIVISIONS',
+                CLASSES: 'AMS_CLASSES',
+                SUBJECTS: 'AMS_SUBJECTS'
+            },
+            getCollection(key) {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : [];
+                } catch (e) { console.error(e); return []; }
+            },
+            saveCollection(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                    return true;
+                } catch (e) { console.error(e); return false; }
+            },
+            findRecord(key, predicate) {
+                const col = this.getCollection(key);
+                return col.find(predicate) || null;
+            },
+            addRecord(key, record) {
+                const col = this.getCollection(key);
+                col.push(record);
+                this.saveCollection(key, col);
+                return record;
+            },
+            updateRecord(key, recordId, updates) {
+                const col = this.getCollection(key);
+                const idx = col.findIndex(r => r.recordId === recordId);
+                if (idx === -1) return null;
+                col[idx] = { ...col[idx], ...updates, updatedAt: new Date().toISOString() };
+                this.saveCollection(key, col);
+                return col[idx];
+            },
+            clearAllData() {
+                Object.values(this.KEYS).forEach(k => localStorage.removeItem(k));
+            }
+        };
+
+        // ============================================================
+        // 2. MASTER DATA MODULE
+        // ============================================================
+        const AcademicModule = {
+            defaultMasterData: {
+                academicYears: ['2026-27', '2027-28', '2028-29'],
+                semesterTypes: ['ODD', 'EVEN', 'SUMMER'],
+                semesters: ['1', '2', '3', '4', '5', '6', '7', '8'],
+                branches: ['CSE', 'ISE', 'ECE', 'EEE', 'ME', 'CE', 'AI&ML', 'DS', 'IT', 'ECM'],
+                divisions: ['A', 'B', 'C', 'D']
+            },
+            initMasterData() {
+                Object.entries({
+                    ACADEMIC_YEARS: 'academicYears',
+                    SEMESTER_TYPES: 'semesterTypes',
+                    SEMESTERS: 'semesters',
+                    BRANCHES: 'branches',
+                    DIVISIONS: 'divisions'
+                }).forEach(([key, prop]) => {
+                    if (Storage.getCollection(Storage.KEYS[key]).length === 0) {
+                        Storage.saveCollection(Storage.KEYS[key], this.defaultMasterData[prop]);
+                    }
+                });
+            },
+            getMasterData() {
+                return {
+                    academicYears: Storage.getCollection(Storage.KEYS.ACADEMIC_YEARS),
+                    semesterTypes: Storage.getCollection(Storage.KEYS.SEMESTER_TYPES),
+                    semesters: Storage.getCollection(Storage.KEYS.SEMESTERS),
+                    branches: Storage.getCollection(Storage.KEYS.BRANCHES),
+                    divisions: Storage.getCollection(Storage.KEYS.DIVISIONS)
+                };
+            }
+        };
+
+        // ============================================================
+        // 3. CLASS MANAGER (unchanged)
+        // ============================================================
+        const ClassManager = {
+            generateUUID() {
+                return 'cls_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+            },
+            generateClassKey(ay, semType, sem, branch, div) {
+                const compactAY = ay.replace(/[^0-9]/g, '');
+                const cleanAY = compactAY.length === 6 ? compactAY.substring(2) : compactAY;
+                return `${cleanAY}|${semType.toUpperCase()}|${sem}|${branch.toUpperCase()}|${div.toUpperCase()}`;
+            },
+            generateClassCode(ay, semType, sem, branch, div) {
+                const compactAY = ay.replace(/[^0-9]/g, '');
+                const cleanAY = compactAY.length === 6 ? compactAY.substring(2) : compactAY;
+                const semPadded = String(sem).padStart(2, '0');
+                return `AY${cleanAY}-${semType.toUpperCase()}-S${semPadded}-${branch.toUpperCase()}-${div.toUpperCase()}`;
+            },
+            findOrCreateClass(params) {
+                const { academicYear, semesterType, semester, branch, division, studentStrength } = params;
+                const classKey = this.generateClassKey(academicYear, semesterType, semester, branch, division);
+                const existing = Storage.findRecord(Storage.KEYS.CLASSES, c => c.classKey === classKey);
+                if (existing) {
+                    return { status: 'EXISTING', classRecord: existing, message: 'Existing Class Found' };
+                }
+                const newClass = {
+                    recordId: this.generateUUID(),
+                    classKey,
+                    classCode: this.generateClassCode(academicYear, semesterType, semester, branch, division),
+                    academicYear,
+                    semesterType: semesterType.toUpperCase(),
+                    semester: String(semester),
+                    branch: branch.toUpperCase(),
+                    division: division.toUpperCase(),
+                    studentStrength: parseInt(studentStrength, 10) || 60,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                Storage.addRecord(Storage.KEYS.CLASSES, newClass);
+                return { status: 'CREATED', classRecord: newClass, message: 'New Class Created Successfully' };
+            }
+        };
+
+        // ============================================================
+        // 4. SUBJECT MANAGER — PROFESSIONAL BEC ENHANCEMENT
+        // ============================================================
+        const SubjectManager = {
+            generateUUID() {
+                return 'sub_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+            },
+            generateSubjectId(classCode, subjectCode) {
+                return `${classCode}-${subjectCode.trim().toUpperCase().replace(/\s+/g, '')}`;
+            },
+
+            /**
+             * Add a professional BEC subject with full metadata.
+             * @param {Object} classRecord - The parent class record.
+             * @param {Object} subjectData - All subject fields.
+             */
+            addSubject(classRecord, subjectData) {
+                const {
+                    subjectCode,
+                    subjectName,
+                    category = 'ES',
+                    subjectType = 'Theory',
+                    credits = 3,
+                    lectureHours = 3,
+                    tutorialHours = 0,
+                    practicalHours = 0,
+                    prerequisites = [],
+                    courseOutcomes = [],
+                    syllabusBrief = ''
+                } = subjectData;
+
+                const cleanCode = subjectCode.trim().toUpperCase().replace(/\s+/g, '');
+                const cleanName = subjectName.trim();
+
+                if (!cleanCode || !cleanName) {
+                    throw new Error('Subject code and subject name are required.');
+                }
+
+                // Duplicate prevention: same class + same subject code
+                const existing = Storage.findRecord(
+                    Storage.KEYS.SUBJECTS,
+                    s => s.classRecordId === classRecord.recordId && s.subjectCode === cleanCode
+                );
+                if (existing) {
+                    throw new Error('This subject already exists for this class.');
+                }
+
+                const subjectId = this.generateSubjectId(classRecord.classCode, cleanCode);
+                const newSubject = {
+                    recordId: this.generateUUID(),
+                    subjectId,
+                    classRecordId: classRecord.recordId,
+                    classCode: classRecord.classCode,
+                    subjectCode: cleanCode,
+                    subjectName: cleanName,
+                    // BEC Professional Fields
+                    category: category,
+                    subjectType: subjectType,
+                    credits: Number(credits) || 0,
+                    lectureHours: Number(lectureHours) || 0,
+                    tutorialHours: Number(tutorialHours) || 0,
+                    practicalHours: Number(practicalHours) || 0,
+                    prerequisites: Array.isArray(prerequisites) ? prerequisites : [],
+                    courseOutcomes: Array.isArray(courseOutcomes) ? courseOutcomes : [],
+                    syllabusBrief: syllabusBrief || '',
+                    // Future extension
+                    teacherId: null,
+                    teacherName: null,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                Storage.addRecord(Storage.KEYS.SUBJECTS, newSubject);
+                return newSubject;
+            },
+
+            /**
+             * Update an existing subject (e.g., add outcomes, change credits)
+             */
+            updateSubject(recordId, updates) {
+                return Storage.updateRecord(Storage.KEYS.SUBJECTS, recordId, updates);
+            },
+
+            /**
+             * Get all subjects for a given class record ID.
+             */
+            getSubjectsByClass(classRecordId) {
+                const all = Storage.getCollection(Storage.KEYS.SUBJECTS);
+                return all.filter(s => s.classRecordId === classRecordId);
+            },
+
+            /**
+             * Get a subject by its record ID.
+             */
+            getSubject(recordId) {
+                return Storage.findRecord(Storage.KEYS.SUBJECTS, s => s.recordId === recordId);
+            }
+        };
+
+        // ============================================================
+        // 5. UI CONTROLLER — BEC Professional
+        // ============================================================
+        const UIController = {
+            activeClass: null,
+            prereqList: [],
+            outcomeList: [],
+
+            init() {
+                AcademicModule.initMasterData();
+                this.populateDropdowns();
+                this.bindEvents();
+                this.renderTables();
+                this.updateSubjectFormVisibility();
+            },
+
+            populateDropdowns() {
+                const master = AcademicModule.getMasterData();
+                const fill = (id, items) => {
+                    const el = document.getElementById(id);
+                    el.innerHTML = items.map(v => `<option value="${v}">${v}</option>`).join('');
+                };
+                fill('academicYear', master.academicYears);
+                fill('semesterType', master.semesterTypes);
+                fill('semester', master.semesters);
+                fill('branch', master.branches);
+                fill('division', master.divisions);
+
+                // Defaults
+                document.getElementById('academicYear').value = '2026-27';
+                document.getElementById('semesterType').value = 'ODD';
+                document.getElementById('semester').value = '3';
+                document.getElementById('branch').value = 'CSE';
+                document.getElementById('division').value = 'A';
+            },
+
+            bindEvents() {
+                // Class Form
+                document.getElementById('classForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const payload = {
+                        academicYear: document.getElementById('academicYear').value,
+                        semesterType: document.getElementById('semesterType').value,
+                        semester: document.getElementById('semester').value,
+                        branch: document.getElementById('branch').value,
+                        division: document.getElementById('division').value,
+                        studentStrength: document.getElementById('studentStrength').value
+                    };
+                    const result = ClassManager.findOrCreateClass(payload);
+                    this.activeClass = result.classRecord;
+                    this.showBanner(`${result.message} — Class Code: <strong>${result.classRecord.classCode}</strong>`,
+                        'success');
+                    this.renderActiveClass();
+                    this.renderTables();
+                    this.updateSubjectFormVisibility();
+                });
+
+                // Subject Form (BEC Professional)
+                document.getElementById('subjectForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (!this.activeClass) {
+                        this.showBanner('Please find or create a class first.', 'error');
+                        return;
+                    }
+
+                    const subjectData = {
+                        subjectCode: document.getElementById('subjectCode').value,
+                        subjectName: document.getElementById('subjectName').value,
+                        category: document.getElementById('subjectCategory').value,
+                        subjectType: document.getElementById('subjectType').value,
+                        credits: document.getElementById('credits').value,
+                        lectureHours: document.getElementById('lectureHours').value,
+                        tutorialHours: document.getElementById('tutorialHours').value,
+                        practicalHours: document.getElementById('practicalHours').value,
+                        prerequisites: [...this.prereqList],
+                        courseOutcomes: [...this.outcomeList],
+                        syllabusBrief: document.getElementById('syllabusBrief').value
+                    };
+
+                    try {
+                        const created = SubjectManager.addSubject(this.activeClass, subjectData);
+                        this.showBanner(`Subject Added: <strong>${created.subjectId}</strong> (${created.category})`,
+                            'success');
+                        // Reset form fields (keep category/type defaults)
+                        document.getElementById('subjectCode').value = '';
+                        document.getElementById('subjectName').value = '';
+                        document.getElementById('credits').value = '3';
+                        document.getElementById('lectureHours').value = '3';
+                        document.getElementById('tutorialHours').value = '0';
+                        document.getElementById('practicalHours').value = '0';
+                        document.getElementById('syllabusBrief').value = '';
+                        this.prereqList = [];
+                        this.outcomeList = [];
+                        this.renderPrereqTags();
+                        this.renderOutcomeList();
+                        this.renderTables();
+                    } catch (err) {
+                        this.showBanner(err.message, 'error');
+                    }
+                });
+
+                // Prerequisites: Add / Remove
+                document.getElementById('addPrereqBtn').addEventListener('click', () => {
+                    const input = document.getElementById('prereqInput');
+                    const val = input.value.trim().toUpperCase();
+                    if (!val) return;
+                    if (this.prereqList.includes(val)) {
+                        this.showBanner('Prerequisite already added.', 'error');
+                        return;
+                    }
+                    this.prereqList.push(val);
+                    input.value = '';
+                    this.renderPrereqTags();
+                });
+                // Enter key on prereq input
+                document.getElementById('prereqInput').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault();
+                        document.getElementById('addPrereqBtn').click(); }
+                });
+
+                // Course Outcomes: Add / Remove
+                document.getElementById('addOutcomeBtn').addEventListener('click', () => {
+                    const input = document.getElementById('outcomeInput');
+                    const val = input.value.trim();
+                    if (!val) return;
+                    this.outcomeList.push(val);
+                    input.value = '';
+                    this.renderOutcomeList();
+                });
+                document.getElementById('outcomeInput').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault();
+                        document.getElementById('addOutcomeBtn').click(); }
+                });
+
+                // Clear Data
+                document.getElementById('clearDataBtn').addEventListener('click', () => {
+                    if (confirm('Clear all local test data?')) {
+                        Storage.clearAllData();
+                        AcademicModule.initMasterData();
+                        this.activeClass = null;
+                        this.prereqList = [];
+                        this.outcomeList = [];
+                        this.renderActiveClass();
+                        this.renderTables();
+                        this.updateSubjectFormVisibility();
+                        this.renderPrereqTags();
+                        this.renderOutcomeList();
+                        this.showBanner('All test data cleared.', 'success');
+                    }
+                });
+            },
+
+            renderActiveClass() {
+                const box = document.getElementById('activeClassDetails');
+                const form = document.getElementById('subjectForm');
+                if (!this.activeClass) {
+                    box.innerHTML = '<em>No class selected. Find or create a class above.</em>';
+                    box.classList.add('muted');
+                    form.classList.add('hidden');
+                    return;
+                }
+                box.classList.remove('muted');
+                box.innerHTML = `
+              <p><strong>Active Class:</strong> ${this.activeClass.classCode}</p>
+              <p><strong>Strength:</strong> ${this.activeClass.studentStrength}</p>
+              <p><strong>Semester:</strong> ${this.activeClass.semester} (${this.activeClass.semesterType})</p>
+              <p><strong>Branch:</strong> ${this.activeClass.branch} - Div ${this.activeClass.division}</p>
+              <p><strong>Record ID:</strong> <small>${this.activeClass.recordId}</small></p>
+            `;
+                form.classList.remove('hidden');
+            },
+
+            updateSubjectFormVisibility() {
+                const form = document.getElementById('subjectForm');
+                if (this.activeClass) {
+                    form.classList.remove('hidden');
+                } else {
+                    form.classList.add('hidden');
+                }
+            },
+
+            renderPrereqTags() {
+                const container = document.getElementById('prereqTags');
+                container.innerHTML = this.prereqList.map(p => `
+              <span class="prereq-tag">
+                ${p}
+                <span class="remove-prereq" data-code="${p}">&times;</span>
+              </span>
+            `).join('');
+                // Attach remove events
+                container.querySelectorAll('.remove-prereq').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const code = el.dataset.code;
+                        this.prereqList = this.prereqList.filter(p => p !== code);
+                        this.renderPrereqTags();
+                    });
+                });
+            },
+
+            renderOutcomeList() {
+                const container = document.getElementById('outcomeList');
+                container.innerHTML = this.outcomeList.map((o, i) => `
+              <div class="outcome-item">
+                <span><strong>CO${i + 1}:</strong> ${o}</span>
+                <span class="remove-outcome" data-index="${i}">&times;</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-value" id="totalSubjectsCount">0</span>
-                <span class="stat-label">Total Subjects</span>
-              </div>
-            </div>
+            `).join('');
+                container.querySelectorAll('.remove-outcome').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const idx = parseInt(el.dataset.index, 10);
+                        this.outcomeList.splice(idx, 1);
+                        this.renderOutcomeList();
+                    });
+                });
+            },
 
-            <h4>Classes Table</h4>
-            <div class="table-wrapper">
-              <table id="classesTable">
-                <thead>
-                  <tr>
-                    <th>Class Code</th>
-                    <th>AY</th>
-                    <th>Sem</th>
-                    <th>Branch</th>
-                    <th>Div</th>
-                    <th>Strength</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
+            renderTables() {
+                const classes = Storage.getCollection(Storage.KEYS.CLASSES);
+                const subjects = Storage.getCollection(Storage.KEYS.SUBJECTS);
 
-            <h4 class="mt-2">Subjects Table</h4>
-            <div class="table-wrapper">
-              <table id="subjectsTable">
-                <thead>
-                  <tr>
-                    <th>Subject ID</th>
-                    <th>Code</th>
-                    <th>Subject Name</th>
-                    <th>Class Code</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
+                document.getElementById('totalClassesCount').textContent = classes.length;
+                document.getElementById('totalSubjectsCount').textContent = subjects.length;
 
-  <script src="script.js"></script>
+                // Classes Table
+                const ct = document.querySelector('#classesTable tbody');
+                ct.innerHTML = classes.map(c => `
+              <tr>
+                <td><strong>${c.classCode}</strong></td>
+                <td>${c.academicYear}</td>
+                <td>${c.semester} (${c.semesterType})</td>
+                <td>${c.branch}</td>
+                <td>${c.division}</td>
+                <td>${c.studentStrength}</td>
+              </tr>
+            `).join('');
+
+                // Subjects Table (BEC Enhanced)
+                const st = document.querySelector('#subjectsTable tbody');
+                st.innerHTML = subjects.map(s => {
+                    const catLabel = s.category || '—';
+                    const catClass = catLabel.toLowerCase();
+                    const ltp = `${s.lectureHours || 0}/${s.tutorialHours || 0}/${s.practicalHours || 0}`;
+                    const cred = s.credits || 0;
+                    const type = s.subjectType || '—';
+                    return `
+                <tr>
+                  <td><strong>${s.subjectId}</strong></td>
+                  <td>${s.subjectCode}</td>
+                  <td>${s.subjectName}</td>
+                  <td><span class="bec-badge ${catClass}">${catLabel}</span></td>
+                  <td>${type}</td>
+                  <td>${cred}</td>
+                  <td>${ltp}</td>
+                  <td>${s.classCode}</td>
+                </tr>
+              `;
+                }).join('');
+            },
+
+            showBanner(message, type) {
+                const banner = document.getElementById('statusBanner');
+                banner.className = `banner banner-${type}`;
+                banner.innerHTML = message;
+                banner.classList.remove('hidden');
+                // Auto-dismiss after 6s
+                clearTimeout(this.bannerTimer);
+                this.bannerTimer = setTimeout(() => banner.classList.add('hidden'), 6000);
+            }
+        };
+
+        // ============================================================
+        // BOOT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            UIController.init();
+        });
+    </script>
 </body>
 </html>

@@ -1,10 +1,16 @@
 /**
  * ACADEMIC MANAGEMENT SYSTEM (AMS) - PHASE 1: STEP 1
- * Core Academic Mapping Architecture
+ * Core Academic Mapping Architecture + Google Apps Script Integration
  */
 
 // ==========================================
-// 1. STORAGE ABSTRACTION LAYER (storage.js equivalent)
+// PASTE YOUR GOOGLE APPS SCRIPT WEB APP LINK HERE:
+// ==========================================
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwmL2-U9M7Q38noJonZ4q8M1l5PgD_C4n5LQaYThhxUOg3CZ4wcTJhHjwZoWsLBB55p/exec"; 
+// Example format: "https://script.google.com/macros/s/AKfycbx.../exec"
+
+// ==========================================
+// 1. STORAGE ABSTRACTION LAYER
 // ==========================================
 const Storage = {
   KEYS: {
@@ -51,11 +57,32 @@ const Storage = {
 
   clearAllData() {
     Object.values(this.KEYS).forEach(k => localStorage.removeItem(k));
+  },
+
+  // Remote Google Apps Script bridge
+  async syncToGoogleSheet(action, payload) {
+    if (!GAS_API_URL || GAS_API_URL.includes("PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE")) {
+      console.warn("No Apps Script URL provided. Data saved to browser localStorage only.");
+      return null;
+    }
+
+    try {
+      // Using text/plain prevents CORS preflight OPTIONS request failures in Apps Script
+      const res = await fetch(GAS_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action, payload })
+      });
+      return await res.json();
+    } catch (err) {
+      console.error("Google Sheets sync failed:", err);
+      return null;
+    }
   }
 };
 
 // ==========================================
-// 2. MASTER DATA MODULE (academic.js equivalent)
+// 2. MASTER DATA MODULE
 // ==========================================
 const AcademicModule = {
   defaultMasterData: {
@@ -96,22 +123,19 @@ const AcademicModule = {
 };
 
 // ==========================================
-// 3. CLASS MANAGER (class-manager.js equivalent)
+// 3. CLASS MANAGER
 // ==========================================
 const ClassManager = {
-  // Generates unique recordId
   generateUUID() {
     return 'cls_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   },
 
-  // Generates normalized search key: 2627|ODD|3|CSE|A
   generateClassKey(ay, semType, sem, branch, div) {
-    const compactAY = ay.replace(/[^0-9]/g, ''); // "2026-27" -> "202627", extracts numbers
-    const cleanAY = compactAY.length === 6 ? compactAY.substring(2) : compactAY; // "2627"
+    const compactAY = ay.replace(/[^0-9]/g, '');
+    const cleanAY = compactAY.length === 6 ? compactAY.substring(2) : compactAY;
     return `${cleanAY}|${semType.toUpperCase()}|${sem}|${branch.toUpperCase()}|${div.toUpperCase()}`;
   },
 
-  // Generates deterministic user-facing Class Code: AY2627-ODD-S03-CSE-A
   generateClassCode(ay, semType, sem, branch, div) {
     const compactAY = ay.replace(/[^0-9]/g, '');
     const cleanAY = compactAY.length === 6 ? compactAY.substring(2) : compactAY;
@@ -119,10 +143,7 @@ const ClassManager = {
     return `AY${cleanAY}-${semType.toUpperCase()}-S${semPadded}-${branch.toUpperCase()}-${div.toUpperCase()}`;
   },
 
-  /**
-   * Core logic: Finds existing class or creates a new deterministic class
-   */
-  findOrCreateClass(params) {
+  async findOrCreateClass(params) {
     const { academicYear, semesterType, semester, branch, division, studentStrength } = params;
 
     const classKey = this.generateClassKey(academicYear, semesterType, semester, branch, division);
@@ -152,6 +173,9 @@ const ClassManager = {
 
     Storage.addRecord(Storage.KEYS.CLASSES, newClass);
 
+    // Sync directly to Google Sheets in parallel
+    Storage.syncToGoogleSheet('findOrCreateClass', params);
+
     return {
       status: 'CREATED',
       classRecord: newClass,
@@ -161,23 +185,19 @@ const ClassManager = {
 };
 
 // ==========================================
-// 4. SUBJECT MANAGER (subject-manager.js equivalent)
+// 4. SUBJECT MANAGER
 // ==========================================
 const SubjectManager = {
   generateUUID() {
     return 'sub_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   },
 
-  // Generates deterministic Subject ID: ClassCode-SubjectCode
   generateSubjectId(classCode, subjectCode) {
     const cleanSubjectCode = subjectCode.trim().toUpperCase().replace(/\s+/g, '');
     return `${classCode}-${cleanSubjectCode}`;
   },
 
-  /**
-   * Adds subject to class with strict duplicate prevention per class
-   */
-  addSubject(classRecord, rawCode, rawName) {
+  async addSubject(classRecord, rawCode, rawName) {
     const cleanCode = rawCode.trim().toUpperCase().replace(/\s+/g, '');
     const cleanName = rawName.trim();
 
@@ -187,7 +207,6 @@ const SubjectManager = {
 
     const subjectId = this.generateSubjectId(classRecord.classCode, cleanCode);
 
-    // Rule: Duplicate prevention within the same class
     const existingSubject = Storage.findRecord(
       Storage.KEYS.SUBJECTS,
       s => s.classRecordId === classRecord.recordId && s.subjectCode === cleanCode
@@ -211,6 +230,14 @@ const SubjectManager = {
     };
 
     Storage.addRecord(Storage.KEYS.SUBJECTS, newSubject);
+
+    // Sync directly to Google Sheets
+    Storage.syncToGoogleSheet('addSubject', {
+      classRecordId: classRecord.recordId,
+      classCode: classRecord.classCode,
+      subjectCode: cleanCode,
+      subjectName: cleanName
+    });
 
     return newSubject;
   }
@@ -243,7 +270,6 @@ const UIController = {
     fillSelect('branch', master.branches);
     fillSelect('division', master.divisions);
 
-    // Defaults for testing
     document.getElementById('academicYear').value = '2026-27';
     document.getElementById('semesterType').value = 'ODD';
     document.getElementById('semester').value = '3';
@@ -253,7 +279,7 @@ const UIController = {
 
   bindEvents() {
     // Class Form Submit
-    document.getElementById('classForm').addEventListener('submit', (e) => {
+    document.getElementById('classForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const payload = {
         academicYear: document.getElementById('academicYear').value,
@@ -264,7 +290,7 @@ const UIController = {
         studentStrength: document.getElementById('studentStrength').value
       };
 
-      const result = ClassManager.findOrCreateClass(payload);
+      const result = await ClassManager.findOrCreateClass(payload);
       this.activeClass = result.classRecord;
 
       this.showBanner(`${result.message} — Class Code: <strong>${result.classRecord.classCode}</strong>`, 'success');
@@ -273,7 +299,7 @@ const UIController = {
     });
 
     // Subject Form Submit
-    document.getElementById('subjectForm').addEventListener('submit', (e) => {
+    document.getElementById('subjectForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!this.activeClass) {
         this.showBanner('Please find or create a class first.', 'error');
@@ -284,7 +310,7 @@ const UIController = {
       const name = document.getElementById('subjectName').value;
 
       try {
-        const createdSubject = SubjectManager.addSubject(this.activeClass, code, name);
+        const createdSubject = await SubjectManager.addSubject(this.activeClass, code, name);
         this.showBanner(`Subject Added Successfully: <strong>${createdSubject.subjectId}</strong>`, 'success');
         document.getElementById('subjectCode').value = '';
         document.getElementById('subjectName').value = '';
@@ -296,7 +322,7 @@ const UIController = {
 
     // Clear Data Button
     document.getElementById('clearDataBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear all prototype classes and subjects?')) {
+      if (confirm('Are you sure you want to clear all local test classes and subjects?')) {
         Storage.clearAllData();
         AcademicModule.initMasterData();
         this.activeClass = null;
@@ -335,7 +361,6 @@ const UIController = {
     document.getElementById('totalClassesCount').textContent = classes.length;
     document.getElementById('totalSubjectsCount').textContent = subjects.length;
 
-    // Render Classes
     const classTbody = document.querySelector('#classesTable tbody');
     classTbody.innerHTML = classes.map(c => `
       <tr>
@@ -348,7 +373,6 @@ const UIController = {
       </tr>
     `).join('');
 
-    // Render Subjects
     const subTbody = document.querySelector('#subjectsTable tbody');
     subTbody.innerHTML = subjects.map(s => `
       <tr>

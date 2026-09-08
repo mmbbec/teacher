@@ -1,176 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Academic Management System — BEC Professional</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Subject ERP</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 <body>
-  <header class="app-header">
-    <div class="header-container">
-      <h2>Academic Management System (AMS)</h2>
-      <span class="badge">Phase 1 — BEC Subject Management (Professional)</span>
-    </div>
-  </header>
 
-  <main class="container">
-    <div id="statusBanner" class="banner hidden"></div>
+  <div class="app">
 
-    <div class="grid-layout">
-      <!-- Left Column -->
-      <section class="forms-column">
-        <!-- Class Setup -->
-        <div class="card">
-          <div class="card-header"><h3>1. Academic Class Setup</h3></div>
-          <form id="classForm" class="card-body">
-            <div class="form-group">
-              <label for="academicYear">Academic Year</label>
-              <select id="academicYear" required></select>
-            </div>
-            <div class="form-row">
-              <div class="form-group half">
-                <label for="semesterType">Semester Type</label>
-                <select id="semesterType" required></select>
-              </div>
-              <div class="form-group half">
-                <label for="semester">Semester</label>
-                <select id="semester" required></select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group half">
-                <label for="branch">Branch</label>
-                <select id="branch" required></select>
-              </div>
-              <div class="form-group half">
-                <label for="division">Division</label>
-                <select id="division" required></select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="studentStrength">Student Strength</label>
-              <input type="number" id="studentStrength" min="1" max="500" value="60" required />
-              <small class="hint">Strength belongs to the division/class, not individual subjects.</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Find / Create Class</button>
-          </form>
-        </div>
+    <header class="topbar">
 
-        <!-- Subject Setup (BEC) -->
-        <div class="card" id="subjectCard">
-          <div class="card-header"><h3>2. Add BEC Subject to Active Class</h3></div>
-          <div class="card-body">
-            <div id="activeClassDetails" class="active-class-box muted">
-              <em>No class selected. Find or create a class above.</em>
-            </div>
+      <div>
+        <h1>Subject ERP</h1>
+        <p>Academic Subject Management System</p>
+      </div>
 
-            <form id="subjectForm" class="hidden">
-              <div class="form-row">
-                <div class="form-group half">
-                  <label for="subjectCode">Subject Code *</label>
-                  <input type="text" id="subjectCode" placeholder="e.g., 21MAT301" required />
-                </div>
-                <div class="form-group half">
-                  <label for="subjectName">Subject Name *</label>
-                  <input type="text" id="subjectName" placeholder="e.g., Engineering Mathematics" required />
-                </div>
-              </div>
+    </header>
 
-              <div class="subject-category-grid">
-                <div class="form-group">
-                  <label for="subjectCategory">Category</label>
-                  <select id="subjectCategory">
-                    <option value="BS">Basic Science (BS)</option>
-                    <option value="ES" selected>Engineering Science (ES)</option>
-                    <option value="HS">Humanities (HS)</option>
-                    <option value="PC">Professional Core (PC)</option>
-                    <option value="PE">Professional Elective (PE)</option>
-                    <option value="OE">Open Elective (OE)</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="subjectType">Subject Type</label>
-                  <select id="subjectType">
-                    <option value="Theory">Theory</option>
-                    <option value="Practical">Practical</option>
-                    <option value="Theory+Practical">Theory + Practical</option>
-                    <option value="Tutorial">Tutorial</option>
-                    <option value="Project">Project</option>
-                  </select>
-                </div>
-              </div>
 
-              <div class="form-section-title">Credits &amp; Contact Hours</div>
-              <div class="subject-detail-row">
-                <div class="form-group">
-                  <label for="credits">Credits</label>
-                  <input type="number" id="credits" min="0" max="12" value="3" />
-                </div>
-                <div class="hours-group">
-                  <div class="form-group"><label>L</label><input type="number" id="lectureHours" min="0" max="8" value="3" /></div>
-                  <div class="form-group"><label>T</label><input type="number" id="tutorialHours" min="0" max="8" value="0" /></div>
-                  <div class="form-group"><label>P</label><input type="number" id="practicalHours" min="0" max="8" value="0" /></div>
-                </div>
-              </div>
+    <main class="home">
 
-              <div class="form-section-title">Prerequisites</div>
-              <div class="form-group">
-                <div style="display:flex;gap:0.5rem;">
-                  <input type="text" id="prereqInput" placeholder="Enter subject code, e.g., 21MAT201" style="flex:1;" />
-                  <button type="button" id="addPrereqBtn" class="btn btn-secondary" style="width:auto;padding:0.4rem 0.8rem;font-size:0.8rem;">Add</button>
-                </div>
-                <div id="prereqTags" class="prereq-tags" style="margin-top:0.4rem;"></div>
-                <small class="hint">List prerequisite subject codes.</small>
-              </div>
+      <section class="welcome">
 
-              <div class="form-section-title">Course Outcomes (COs)</div>
-              <div class="form-group">
-                <div style="display:flex;gap:0.5rem;">
-                  <input type="text" id="outcomeInput" placeholder="e.g., Apply Laplace transforms" style="flex:1;" />
-                  <button type="button" id="addOutcomeBtn" class="btn btn-secondary" style="width:auto;padding:0.4rem 0.8rem;font-size:0.8rem;">Add</button>
-                </div>
-                <div id="outcomeList" class="outcome-list" style="margin-top:0.4rem;"></div>
-                <small class="hint">Define measurable learning outcomes.</small>
-              </div>
+        <h2>Welcome to Subject ERP</h2>
 
-              <div class="form-group">
-                <label for="syllabusBrief">Syllabus Brief</label>
-                <textarea id="syllabusBrief" rows="2" placeholder="Key topics covered..." style="width:100%;padding:0.55rem;border:1px solid var(--border-color);border-radius:6px;font-size:0.9rem;resize:vertical;"></textarea>
-              </div>
+        <p>
+          Manage teachers, students, subjects
+          and academic mapping.
+        </p>
 
-              <button type="submit" class="btn btn-secondary">Add BEC Subject</button>
-            </form>
-          </div>
-        </div>
       </section>
 
-      <!-- Right Column -->
-      <section class="data-column">
-        <div class="card">
-          <div class="card-header flex-between">
-            <h3>System Verification &amp; Data Registry</h3>
-            <button id="clearDataBtn" class="btn btn-danger-sm">Clear Test Data</button>
-          </div>
-          <div class="card-body">
-            <div class="stats-bar">
-              <div class="stat-item"><span class="stat-value" id="totalClassesCount">0</span><span class="stat-label">Total Classes</span></div>
-              <div class="stat-item"><span class="stat-value" id="totalSubjectsCount">0</span><span class="stat-label">Total Subjects</span></div>
-            </div>
-            <h4>Classes Table</h4>
-            <div class="table-wrapper">
-              <table id="classesTable"><thead><tr><th>Class Code</th><th>AY</th><th>Sem</th><th>Branch</th><th>Div</th><th>Strength</th></tr></thead><tbody></tbody></table>
-            </div>
-            <h4 class="mt-2">Subjects Table (BEC Enhanced)</h4>
-            <div class="table-wrapper">
-              <table id="subjectsTable"><thead><tr><th>Subject ID</th><th>Code</th><th>Name</th><th>Cat</th><th>Type</th><th>Credits</th><th>L/T/P</th><th>Class Code</th></tr></thead><tbody></tbody></table>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
 
-  <script src="script.js"></script>
+      <section class="portal-grid">
+
+        <a
+          href="teacher.html"
+          class="portal-card"
+        >
+
+          <div class="portal-icon">
+            👨‍🏫
+          </div>
+
+          <h3>Teacher Dashboard</h3>
+
+          <p>
+            Manage subjects, classes
+            and resources.
+          </p>
+
+        </a>
+
+
+        <a
+          href="student.html"
+          class="portal-card"
+        >
+
+          <div class="portal-icon">
+            👨‍🎓
+          </div>
+
+          <h3>Student Dashboard</h3>
+
+          <p>
+            Register subjects and
+            view resources.
+          </p>
+
+        </a>
+
+
+        <a
+          href="admin.html"
+          class="portal-card"
+        >
+
+          <div class="portal-icon">
+            ⚙️
+          </div>
+
+          <h3>Admin Dashboard</h3>
+
+          <p>
+            Manage the academic
+            database.
+          </p>
+
+        </a>
+
+      </section>
+
+    </main>
+
+  </div>
+
 </body>
+
 </html>

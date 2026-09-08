@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Teacher Dashboard</title>
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+  <div class="container">
+
+    <header class="header">
+
+      <div>
+        <h1>Teacher Dashboard</h1>
+        <p>Academic Subject Management</p>
+      </div>
+
+    </header>
+
+
+    <main>
+
+      <!-- Dashboard Summary -->
+
+      <section class="stats">
+
+        <div class="stat-card">
+
+          <span>Total Subjects</span>
+
+          <strong id="subjectCount">
+            0
+          </strong>
+
+        </div>
+
+      </section>
+
+
+      <!-- Add Subject -->
+
+      <section class="card">
+
+        <h2>Add Subject</h2>
+
+        <form id="subjectForm">
+
+          <div class="form-grid">
+
+            <div class="form-group">
+
+              <label>
+                Subject Code
+              </label>
+
+              <input
+                type="text"
+                id="subjectCode"
+                placeholder="Example: 22UMA201C"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Subject Name
+              </label>
+
+              <input
+                type="text"
+                id="subjectName"
+                placeholder="Example: Mathematics"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Semester
+              </label>
+
+              <select id="semester" required>
+
+                <option value="">
+                  Select Semester
+                </option>
+
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Division
+              </label>
+
+              <select id="division" required>
+
+                <option value="">
+                  Select Division
+                </option>
+
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="submit"
+            id="saveButton"
+          >
+            Save Subject
+          </button>
+
+        </form>
+
+
+        <div id="message"></div>
+
+      </section>
+
+
+      <!-- Subject List -->
+
+      <section class="card">
+
+        <div class="section-header">
+
+          <h2>My Subjects</h2>
+
+          <button
+            type="button"
+            id="refreshButton"
+            class="secondary-button"
+          >
+            Refresh
+          </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Semester</th>
+                <th>Division</th>
+                <th>Action</th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody id="subjectTableBody">
+
+              <tr>
+
+                <td
+                  colspan="5"
+                  class="empty"
+                >
+                  Loading...
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
